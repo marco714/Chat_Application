@@ -1,0 +1,192 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <div class="chat-container">
+
+        <div id="friends">
+            
+            {% for group in rooms %}
+
+                {% if group.name != 'private_chat' %}
+                    <a href="#" class="friend-chat-link">
+                        <div class="friends-container">
+
+                            <div class="user-picture">
+                                <img src="{{ url_for('static', filename='profile_pictures/default.jpg') }}" class="rounded-circle article-img">
+                            </div>
+
+                            <div class="user-chat">
+                                <h6>{{ group.name }}</h6>
+                                
+                                <span>You are invited to a Group</span>
+
+                            </div>
+
+                        </div>
+                    </a>
+
+                {% endif %}
+            {% endfor %}
+
+        </div>
+        
+        <div id="chat">
+            <div id="header-user">
+                <img src="{{ url_for('static', filename='profile_pictures/default.jpg') }}" alt="" class="rounded-circle article-img" style="margin-top: 0.3rem; margin-left: 0.5rem;">
+    
+                <div class="user-status" id="user_status">
+    
+                    <h5>Dining</h5>
+                    <p class="text-muted" style="font-size:small;">Active On Messenger <i class="fas fa-circle status"></i></p>
+                </div>
+    
+                <button id="create-group" style="border: none; " type="button" data-toggle="modal" data-target="#staticBackdrop">Create Group</button>
+    
+            </div>
+    
+            <div class="modal fade" id="staticBackdrop" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">Group Chat</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="" class="form-control-label label-login">Group Name</label>
+                            <input type="text" class="form-control form-control-lg" id="group_name">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" id="group_create">Create Group</button>
+                    </div>
+                </div>
+                </div>
+            </div>
+            
+            <div id="chat-user">
+
+                <div id="messages">
+                    
+                </div>
+    
+                
+                <div id="input-messages">
+                    <input type="text" class="form-control form-control-lg" placeholder="Type A Message" style="margin-left:1rem;" id="user_input">
+                    <button id="sent_button"><i class="fas fa-share" id="sent_icon"></i></button>
+                </div>
+    
+            </div>
+
+        </div>
+
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        const socket = io.connect(`http://${document.domain}:${location.port}`);
+        const username = `{{ current_user.username }}`;
+        let room = "Dining";
+        joinRoom(room);
+
+        socket.on('message', data => {
+            console.log(data)
+            const p = document.createElement('p');
+            const span_username = document.createElement('span');
+            const br = document.createElement('br')
+
+            p.setAttribute("class", "text-muted");
+
+            if (data.username){
+                span_username.innerHTML = data.username;
+                p.innerHTML = span_username.outerHTML + br.outerHTML + data.msg + br.outerHTML
+                document.querySelector('#messages').appendChild(p);
+                
+            }else{
+                printSysMsg(data.msg)
+            }
+
+        })
+
+        socket.on('messages_send', data => {
+
+            if (data['username'] === username){
+                const senderEl = document.createElement('div');
+                const span_message = document.createElement('span');
+
+                senderEl.classList.add('sender')
+                span_message.classList.add('message')
+
+                span_message.textContent = data['msg']
+                senderEl.appendChild(span_message)
+
+                document.querySelector('#messages').appendChild(senderEl);
+
+
+            }else{
+                const receiverEl = document.createElement('div');
+                const span_message = document.createElement('span');
+                const receiverImage = document.createElement('img')
+
+                receiverEl.classList.add('receiver')
+                span_message.classList.add('message')
+                receiverImage.classList.add('rounded-circle', 'chat-img')
+
+                receiverImage.src =` {{ url_for('static', filename='profile_pictures/default.jpg') }}`
+                span_message.textContent = data['msg']
+
+                receiverEl.appendChild(receiverImage);
+                receiverEl.appendChild(span_message);
+
+                document.querySelector('#messages').appendChild(receiverEl);
+
+            }
+        })
+
+        document.querySelectorAll('.friend-chat-link').forEach(group => {
+            group.onclick = () => {
+                let newRoom = group.querySelector('h6').innerHTML;
+
+                if (newRoom == room){
+                    msg = `You are Already in the ${room} room.`
+                    printSysMsg(msg);
+                }else{
+                    let name = document.querySelector('#user_status')
+                    name.querySelector('h5').textContent = newRoom
+                    leaveRoom(room);
+                    joinRoom(newRoom);
+                    room = newRoom;
+                }
+            }
+        })
+        
+        function leaveRoom(room){
+            console.log('leave')
+            socket.emit('leave', {'username':username, 'room':room});
+        }
+
+        function joinRoom(room){
+            socket.emit('join', {'username':username, 'room':room});
+            document.querySelector('#messages').innerHTML = '';
+        }
+
+        function printSysMsg(msg){
+            console.log(msg);
+            const p = document.createElement('p')
+            p.innerHTML = msg;
+            document.querySelector('#messages').appendChild(p)
+        }
+
+        document.querySelector('#sent_button').addEventListener('click', function (){
+            const input_value = document.querySelector('#user_input').value;
+            console.log(input_value);
+            socket.emit('send_messages', {'msg': input_value, 'username': username, 'room':room});
+            document.querySelector('#user_input').value = ''
+        })
+
+    </script>
+{% endblock %}

@@ -1,0 +1,34 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+    <div class="chat-container">
+
+        <div id="friends">
+
+            {% for friend in friends %}
+                <a href="{{ url_for('friend_chat', user_id=friend.id) }}" class="friend-chat-link">
+                    <div class="friends-container">
+
+                        <div class="user-picture">
+                            <img src="{{ url_for('static', filename='profile_pictures/default.jpg') }}" class="rounded-circle article-img">
+                        </div>
+    
+                        <div class="user-chat">
+                            <h6>{{ friend.username }}</h6>
+                            
+                            <span>You are now connected on Messenger</span>
+    
+                        </div>
+    
+                    </div>
+                </a>
+
+            {% endfor %}
+
+        </div>  
+
+        {% block friend_chats %}{% endblock %}
+    </div>
+
+{% endblock %}

@@ -1,0 +1,234 @@
+body{
+    background: rgba(242,246,248,1);
+
+}
+.parent-login{
+    background-color: rgba(226,226,226,1);;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 700px;
+    height: 500px;
+    margin-left: 200px;
+    margin-top: 50px;
+}
+
+.login-user{
+    background-color: #ffffff;
+    border-right: 1px solid #dddddd;
+    width: 350px;
+    height: 470px;
+    text-align: center;
+    margin-left: 1rem;
+}
+
+.login-advertise{
+    background-color: #ffffff;
+    width: 350px;
+    height: 470px;
+    text-align: center;
+    margin-right: 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly
+}
+
+.content-section{
+    padding:10px 20px;
+
+}
+
+.title-login{
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    
+}
+
+.label-login{
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    margin-right: 250px;
+}
+
+.form-check{
+    display:flex; 
+    justify-content:space-between;
+}
+
+.btn-dark{
+    width: 100%;
+}
+
+.navigation-user{
+    background-color: rgba(235,233,249,1);
+    position: absolute;
+    right: 0rem;
+}
+
+.nav-item{
+    margin-left: 1rem;
+}
+
+.chat-container{
+    display: flex;
+    flex-direction: row;
+    background-color: rgba(235,233,249,1);
+    width: 155%;
+    height: 44.6rem;
+    margin-left: -12.5rem;
+    
+}
+
+#friends{
+    flex: 1;
+    background-color: cornflowerblue;
+    display: flex;
+    flex-direction: column;
+
+}
+
+#chat{
+    flex:2;
+    display: flex;
+    flex-direction: column;
+    background-color: darkgrey;
+}
+
+#header-user{
+    background-color: darkorange;
+    flex: 1;
+}
+
+#chat-user{
+    background-color: darkviolet;
+    flex:7;
+    display: flex;
+    flex-direction: column;
+}
+
+body{
+    margin: 0;
+}
+
+#messages{
+    flex:2;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: flex-end;
+}
+
+.message{
+    border: 1px solid black;
+    padding: 5px;
+    border-radius: 3rem;
+    background-color:lightseagreen;
+}
+
+.sender{
+    position: relative;
+    left: -2rem;
+    margin-bottom: 1.2rem;
+}
+
+.receiver{
+    position: relative;
+    left:-30rem;
+    margin-bottom: 1rem;
+}
+
+#input-messages{
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 0.5rem;
+}
+
+#sent_button{
+    background-color: transparent;
+    border:none;
+    width: 3rem;
+}
+
+#sent_button i{
+    color: turquoise;
+}
+.friends-container{
+    background-color: dimgray;
+    display: flex;
+    flex-direction: row;
+    height: 6rem;
+}
+
+.friends-container:hover{
+    background-color: firebrick;
+    cursor: pointer;
+}
+.article-img{
+    height: 65px;
+    width: 65px;
+    /* margin-right: 16px; */
+}
+
+.user-picture{
+    margin-left: 1rem;
+    margin-top: 1rem;
+}
+
+.user-chat{
+    margin-left: 1rem;
+    margin-top: 1rem;
+}
+
+.user-chat span{
+    display: inline-block;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 15rem;
+}
+
+.friend-chat-link{
+    color: black;
+}
+
+.friend-chat-link:hover{
+    color: black;
+    text-decoration: none;
+    outline: none;
+}
+
+#header-user{
+    display: flex;
+    flex-direction: row;
+}
+
+.user-status{
+    margin-left: 1rem;
+    margin-top: 0.5rem;
+}
+
+.status {
+    color: green;
+}
+
+.chat-img{
+    width: 40px;
+    height: 40px;
+}
+
+#create-group{
+    margin-left: 25rem;
+    font-family: inherit;
+    font-weight: bold;
+    height: 3rem;
+    margin-top: 1rem;
+    border-radius: 5px;
+    transition-property: transform;
+    transition-duration: 0.5s;
+    transition-timing-function: ease-out;
+}
+
+#create-group:hover{
+    background-color: green;
+    transform: translateX(0.4rem);
+}

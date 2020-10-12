@@ -1,0 +1,148 @@
+{% extends "chat_page.html" %}
+
+{% block friend_chats %}
+    <div id="chat">
+
+        <div id="header-user">
+            <img src="{{ url_for('static', filename='profile_pictures/default.jpg') }}" alt="" class="rounded-circle article-img" style="margin-top: 0.3rem; margin-left: 0.5rem;">
+
+            <div class="user-status">
+
+                <h5>{{ receiver.username }}</h5>
+                <p class="text-muted" style="font-size:small;">Active On Messenger <i class="fas fa-circle status"></i></p>
+            </div>
+
+            <button id="create-group" style="border: none; "><a href="{{ url_for('group_chat') }}" style="color:black; text-decoration:none;">Go To Group</a></button>
+
+        </div>
+
+        <div id="chat-user">
+            
+            <div id="messages">
+
+                    {% for message in room.room_message %}
+
+                        {% if message | sender_message == user %}
+
+                            <div class="sender">
+                                <span class="message">{{ message.message }}</span>
+                            </div>
+
+                        {% else %}
+
+                            <div class="receiver">
+                                <img src="{{ url_for('static', filename='profile_pictures/default.jpg') }}" alt="" class="rounded-circle chat-img" style="margin-top: 0.2rem;"> 
+                                <span class="message" style="margin-left: 1px;">{{ message.message }}</span>
+                            </div>
+
+                        {% endif %}
+                    {% endfor %}
+            </div>
+
+            <div id="input-messages">
+                <input type="text" class="form-control form-control-lg" placeholder="Type A Message" style="margin-left:1rem;" id="user_input">
+                <button id="sent_button"><i class="fas fa-share" id="sent_icon"></i></button>
+
+            </div>
+
+        </div>
+        
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function (){
+
+            let private_socket = io(`http://${document.domain}:${location.port}/private`);
+            const sent_button = document.querySelector('#sent_button');
+            const group_button = document.querySelector('#group_create');
+
+            // Getting the user request sid
+            private_socket.on('connect', function (){
+
+                const friend_url = document.URL
+                private_socket.emit('receiver_url', friend_url)
+            })
+
+            sent_button.addEventListener('click', function (){
+                const friend_url = document.URL.split("/")[4];
+                const user_message = document.querySelector('#user_input').value;
+
+                createSenderEl();
+                sent_user_input();
+
+                private_socket.emit('friend_chat', {'user_id':friend_url, 'message':user_message})
+
+            })
+
+            private_socket.on('my_custom_response', function (data){
+
+                const message_container = document.querySelector('#messages');
+                const receiverEl = document.createElement('div');
+                const receiverMessage = document.createElement('span');
+                const receiverImage = document.createElement('img');
+
+                receiverImage.src =`{{ url_for('static', filename='profile_pictures/default.jpg') }}`;
+                
+                receiverMessage.textContent = data;
+                receiverMessage.setAttribute("style", "margin-left:1px;");
+
+                receiverMessage.classList.add('message');
+                receiverImage.classList.add('rounded-circle', 'chat-img')
+                receiverEl.classList.add('receiver');
+
+                receiverEl.appendChild(receiverImage);
+                receiverEl.appendChild(receiverMessage);
+                message_container.appendChild(receiverEl);
+
+                console.log(data)
+            })
+
+            function createSenderEl(){
+                const user_message = document.querySelector('#user_input').value;
+
+                // createElement
+                const message_container = document.querySelector('#messages')
+                const create_message_sender = document.createElement('div')
+                const sender_message = document.createElement('span')
+
+                sender_message.textContent = user_message
+
+                sender_message.classList.add('message')
+                create_message_sender.classList.add('sender')
+                
+                create_message_sender.appendChild(sender_message)
+                message_container.appendChild(create_message_sender)
+
+            }
+
+            function sent_user_input(){
+                const friend_url = document.URL.split("/")[4]
+                const user_message = document.querySelector('#user_input').value;
+
+                const entry = {
+                    message:user_message,
+                    receiver_id:friend_url
+                }
+
+                const myHeaders = new Headers();
+                myHeaders.append("content-type", "application/json");
+
+                const myInit = {
+                    method:'POST',
+                    credentials:"include",
+                    body:JSON.stringify(entry),
+                    headers:myHeaders,
+                    cache:"no-cache"
+                }
+
+                const myRequests = new Request('http://127.0.0.1:5000/chat_page/messages')
+
+                fetch(myRequests, myInit);
+            }
+
+        })
+
+    </script>
+{% endblock %}
